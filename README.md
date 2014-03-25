@@ -1,4 +1,4 @@
 coffeeproject
 =============
 
-Starbucks locations/income
+Starbucks locations by income distribution.
