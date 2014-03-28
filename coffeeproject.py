@@ -3,7 +3,7 @@ import urllib2
 import json
 import csv
 
-url = "https://openapi.starbucks.com/v1/stores/nearby?callback=&radius=50&limit=50&latLng={0}%2C{1}&access_token=gqrjx7aauyufqyva2x48xv6e"
+url = "https://openapi.starbucks.com/v1/stores/nearby?callback=&radius=50&limit=50&latLng={0}%2C{1}&access_token=v53hgty3cgfa87tda6k9uxxx"
 
 starbucks_stores = []
 zip_filename = "zip_code_database.csv"
@@ -28,15 +28,26 @@ with open(zip_filename, 'rb') as csvfile:
 		#20001
 		#27359
 		#31558
-		#38341 between this and the next #, was not saved, run again, save as output 6
+		#38341 
+		#43127 between this number and the next, save as 6a
 		#47403
 		#56309
 		#63108
 		#64188
-
+		#74960
+		#82729
+		#85219
+		#89116
+		#89434
+		#90632
+		#91103
+		#92018
+		#92199
+		#92604
+		#96820
 
 		
-		if int(zip_code) <= 64188:
+		if int(zip_code) <= 43127 or int(zip_code) >= 47403:
 			continue
 		
 		if lat == "0" or lng == "0":
@@ -59,8 +70,5 @@ with open(zip_filename, 'rb') as csvfile:
 		#break
 
 #f.close()
-
-print starbucks_stores
-
 
 
