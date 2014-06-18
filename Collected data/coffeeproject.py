@@ -62,7 +62,7 @@ with open(zip_filename, 'rb') as csvfile:
 		for stores in data["stores"]:
 			if str(stores["store"]["address"]["postalCode"]).startswith(zip_code):
 				starbucks_stores.append(stores["store"])
-				f = open('output.txt', 'w')
+				f = open('range.json', 'w')
 				json.dump(starbucks_stores, f)
 				f.close()
 				print "Kisses!"
