@@ -1,112 +1,83 @@
 <!DOCTYPE html>
+
 <html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <style type="text/css">
-      html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0 }
-      #map-canvas { height: 100% }
-    </style>
+    <head>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <style type="text/css">
+            html { height: 100% }
+            body { height: 100%; margin: 0; padding: 0 }
+            #map-canvas { height: 100% }
+        </style>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8CwNqkz_BMXQnLmk4EH_kPJJcYsI7jjg&sensor=true">
-    </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8CwNqkz_BMXQnLmk4EH_kPJJcYsI7jjg&sensor=true"></script>
+        <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/src/markerclusterer_packed.js"></script>
 
-    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/src/markerclusterer_packed.js">
-    </script>
+        <script type="text/javascript">
+            var map = null;
+            
+            function countiesLoaded(countyInput) {
+                for (var i = 0; i < countyInput.length; i += 1)  {
+                    var countyList = []
+                    var countyCoords = countyInput[i]
 
-    <script type="text/javascript">
-    
-    var map
-    
-    function countiesLoaded(countyInput) {
-      var countyInput = JSON.parse(countyInput);
+                
+                    for (var j = 0; j < countyCoords.length; j += 2) {
+                        var lat = countyCoords[j]
+                        var long = countyCoords[j + 1]
+                        countyList.push(new google.maps.LatLng(lat, long))
+                    }
 
-      for (var i=0; i<countyInput.length; i += 1)  {
-        var countyList = []
-        var countyCoords = countyInput[i]
+                    // Construct the polygon.
+                    countyPolygon = new google.maps.Polygon({
+                        paths: countyList,
+                        strokeColor: "#685F75",
+                        strokeOpacity: 1,
+                        strokeWeight: .5,
+                        fillColor: "#E2CFFF",
+                        fillOpacity: 0.30
+                    });
 
-        
-        for (var j=0; j<countyCoords.length; j += 2) {
-          var lat = countyCoords[j]
-          var long = countyCoords[j+1]
-          countyList.push(new google.maps.LatLng(lat, long))
-          console.log("Input received!")
+                    countyPolygon.setMap(map);
+                }
+            }
 
-        }  
-        // Construct the polygon.
-          countyPolygon = new google.maps.Polygon({
-          paths: countyList,
-          strokeColor: '#3B0470',
-          strokeOpacity: 1,
-          strokeWeight: 1,
-          fillColor: '#552781',
-          fillOpacity: 0.35
-        });
+            function dataLoaded(starbucksStoreLocations) {
+                var markerArray = [];
 
-        countyPolygon.setMap(map);
-      }
+                for (var i = 0; i < starbucksStoreLocations.length; i += 1) {
+                    if (starbucksStoreLocations[i].coordinates) {
+                        var myLatlng = new google.maps.LatLng(starbucksStoreLocations[i].coordinates.latitude, starbucksStoreLocations[i].coordinates.longitude);
 
+                        var marker = new google.maps.Marker({
+                            position: myLatlng
+                        });
 
-    }
+                        markerArray.push(marker);
+                    }
+                }
 
-    function dataLoaded(starbucksStoreLocations) {
-        console.log("Kisses!")
+                var markerCluster = new MarkerClusterer(map, markerArray);
+            }
 
-      var starbucksStoreLocations = JSON.parse(starbucksStoreLocations);
+            function initialize() {
+                var mapOptions = {
+                    center: new google.maps.LatLng(39.50, -98.35),
+                    zoom: 4,
+                    minZoom: 3
+                };
 
-      var markerArray = []
+                map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-      for (var i=0; i<starbucksStoreLocations.length; i += 1) {     
-        var myLatlng = new google.maps.LatLng(starbucksStoreLocations[i].coordinates.latitude, starbucksStoreLocations[i].coordinates.longitude);
+                $.getJSON("https://s3.amazonaws.com/katefilippova.com/projects/starbucks/back-end/starbucks-zipped.json").done(dataLoaded);
+                $.getJSON("https://s3.amazonaws.com/katefilippova.com/projects/starbucks/back-end/coordinates.json").done(countiesLoaded);
+            }
 
-      
-        var marker = new google.maps.Marker({
-          position: myLatlng
-          });
-
-          markerArray.push(marker);
-      }
-
-      var markerCluster = new MarkerClusterer(map, markerArray);
-    }
-
-      function initialize() {
-        var mapOptions = {
-          center: new google.maps.LatLng(39.50, -98.35),
-          zoom: 4,
-          minZoom: 3
-        };
-
-
-
-        map = new google.maps.Map(document.getElementById("map-canvas"),
-            mapOptions);
-
-
-        $.ajax({
-        url: "https://s3.amazonaws.com/katefilippova.com/projects/starbucks.json",
-        success: dataLoaded,
-        });
-
-        $.ajax({
-        url: "https://s3.amazonaws.com/katefilippova.com/projects/coordinates.json",
-        success: countiesLoaded,
-        });
-
-      }
-
-      google.maps.event.addDomListener(window, 'load', initialize);
-
-
-
-
-
-    </script>
-  </head>
-  <body>
-    <div id="map-canvas"/>
-  </body>
+            google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
+    </head>
+  
+    <body>
+        <div id="map-canvas"></div>
+    </body>
 </html>
