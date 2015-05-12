@@ -42,8 +42,10 @@
                 }
             }
 
-            function dataLoaded(starbucksStoreLocations) {
+            function starbucksLoaded(starbucksStoreLocations) {
                 var markerArray = [];
+
+                console.log("here");
 
                 for (var i = 0; i < starbucksStoreLocations.length; i += 1) {
                     if (starbucksStoreLocations[i].coordinates) {
@@ -58,6 +60,7 @@
                 }
 
                 var markerCluster = new MarkerClusterer(map, markerArray);
+                console.log("test", starbucksStoreLocations.length);
             }
 
             function initialize() {
@@ -69,11 +72,16 @@
 
                 map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-                $.getJSON("https://s3.amazonaws.com/katefilippova.com/projects/starbucks/back-end/starbucks-zipped.json").done(dataLoaded);
+                $.getJSON("https://s3.amazonaws.com/katefilippova.com/projects/starbucks/back-end/starbucks-zipped.json").done(starbucksLoaded);
+                    .fail(function() {
+                        console.log("fuck");
+                    });
                 $.getJSON("https://s3.amazonaws.com/katefilippova.com/projects/starbucks/back-end/coordinates.json").done(countiesLoaded);
             }
 
             google.maps.event.addDomListener(window, 'load', initialize);
+
+            console.log("asdf");
         </script>
     </head>
   
